@@ -4,6 +4,9 @@
     <ClCompile Include="C:\Users\Zingiez\Documents\GitHub\GLengine\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\Zingiez\Documents\GitHub\GLengine\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\Zingiez\Documents\GitHub\GLengine\CMakeLists.txt" />
