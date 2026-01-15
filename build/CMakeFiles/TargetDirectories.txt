@@ -1,0 +1,3 @@
+C:/Users/Zingiez/Documents/GitHub/GLengine/build/CMakeFiles/GLENGINE.dir
+C:/Users/Zingiez/Documents/GitHub/GLengine/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Zingiez/Documents/GitHub/GLengine/build/CMakeFiles/ZERO_CHECK.dir
