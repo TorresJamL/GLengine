@@ -15,6 +15,6 @@ add_executable(GLENGINE
     src/glad.c
 )
 
-target_include_directories(GLENGINE PRIVATE dependencies)
+target_include_directories(GLENGINE PRIVATE dependencies includes)
 
 target_link_libraries(GLENGINE ${GLFW3_LIBRARY})
