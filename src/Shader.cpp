@@ -1,4 +1,4 @@
-#include "includes/Shader.hpp"
+#include "Shader.hpp"
 
 using namespace std;
 string process_file(const char* filename) {
@@ -12,6 +12,7 @@ string process_file(const char* filename) {
 		in.close();
 		return contents;
 	}
+	cerr << "Something has gone awefully wrong." << endl;
 	throw (errno);
 }
 
