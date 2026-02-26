@@ -21,6 +21,7 @@ public:
 
     void Use();
     void Delete();
+    void ApplyAspectRatio(float aspect);
 private:
     void compileErrors(GLuint shader, cstr type);
 };

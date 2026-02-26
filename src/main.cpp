@@ -11,22 +11,14 @@
 
 using namespace std;
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-
-const char *fragShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "\n"
-    "void main(){\n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
+// GLOBALS
+float width = 800.0f;
+float height = 600.0f;
+float aspect = width / height;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height);
+    aspect = (float)width / (float)height;
 }
 
 void processInput(GLFWwindow *window){
@@ -66,7 +58,7 @@ int main(){
     glViewport(0, 0, 800, 600);
 
     // Vertex stuff
-    GLfloat vertices[] = { // x, y, z per vertex
+    float vertices[] = { // x, y, z per vertex
          0.5f,  0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
         -0.5f, -0.5f, 0.0f,
@@ -77,22 +69,25 @@ int main(){
         0, 1, 3, // Tri 1
         1, 2, 3  // Tri 2
     };
-    
+
     // Element Buffer Object
     EBO ebo(indicies, sizeof(indicies));
     VBO vbo(vertices, sizeof(vertices));
     VAO vao;
+    vao.Bind();
 
     ebo.Bind();
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(float), (void*)0);
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0); // 3 times because x, y, z
 
     vbo.Unbind();
-    vao.Bind();
+    vao.Unbind();
     ebo.Unbind();
 
     Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    cout << "Beginning render loop." << endl;
 
     while (!glfwWindowShouldClose(window)){
         // input
@@ -103,7 +98,9 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
 
         shdr.Use();
+        shdr.ApplyAspectRatio(aspect);
         vao.Bind();
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Event / buffer handling here

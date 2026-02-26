@@ -2,23 +2,28 @@
 
 using namespace std;
 string process_file(const char* filename) {
-    ifstream in(filename, ios::binary);
-    if (in) {
-		string contents;
-		in.seekg(0, ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return contents;
+    ifstream file(filename);
+
+	if (!file.is_open()) {
+		cerr << "Cannot open file: " << filename << endl;
+		throw errno;
 	}
-	cerr << "[Shader.cpp]: File: " << filename << ", failed to open." << endl;
-	throw runtime_error("Failed to open file " + string(filename));
+	string overall = "";
+	string line;
+    while (getline(file, line)) {
+		overall += line + "\n";
+    }
+
+    file.close();
+	return overall;  
 }
 
-Shader::Shader(cstr vertFilename, cstr fragFilename) {
-    cstr vertSource = process_file(vertFilename).c_str();
-    cstr fragSource = process_file(fragFilename).c_str();
+Shader::Shader(const char* vertFilename, const char* fragFilename) {
+	string vert_str = process_file(vertFilename);
+	string frag_str = process_file(fragFilename);
+
+    const char* vertSource = vert_str.c_str();
+    const char* fragSource = frag_str.c_str();
 
     // Start with vertex shader
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
@@ -51,6 +56,11 @@ void Shader::Delete() {
     glDeleteProgram(ID);
 }
 
+void Shader::ApplyAspectRatio(float aspect) {
+	GLuint aspectLoc = glGetUniformLocation(ID, "aspect");
+	glUniform1f(aspectLoc, aspect);
+}
+
 void Shader::compileErrors(GLuint shader, cstr type) {
 	GLint hasCompiled;
 	char infoLog[1024];
@@ -59,6 +69,7 @@ void Shader::compileErrors(GLuint shader, cstr type) {
 		if (hasCompiled == GL_FALSE) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 			cerr << "SHADER_COMPILATION_ERROR for: " << type << "\n" << endl;
+			cerr << infoLog << "\n" << endl;
 		}
 	}
 	else {
@@ -66,6 +77,7 @@ void Shader::compileErrors(GLuint shader, cstr type) {
 		if (hasCompiled == GL_FALSE) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
 			cerr << "SHADER_LINKING_ERROR for: " << type << "\n" << endl;
+			cerr << infoLog << "\n" << endl;
 		}
 	}
 }
