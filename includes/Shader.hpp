@@ -6,7 +6,7 @@
 #include <string>
 #include <cerrno>
 
-#include <glad/glad.h>
+#include <glad.h>
 #include "GLFW/glfw3.h"
 
 std::string process_file(const char* filename);

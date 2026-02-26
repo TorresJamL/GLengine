@@ -12,8 +12,8 @@ string process_file(const char* filename) {
 		in.close();
 		return contents;
 	}
-	cerr << "Something has gone awefully wrong." << endl;
-	throw (errno);
+	cerr << "[Shader.cpp]: File: " << filename << ", failed to open." << endl;
+	throw runtime_error("Failed to open file " + string(filename));
 }
 
 Shader::Shader(cstr vertFilename, cstr fragFilename) {

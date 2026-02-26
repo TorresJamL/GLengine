@@ -11,7 +11,6 @@ find_package(OpenGL REQUIRED)
 # find_package(GLFW3 REQUIRED)
 add_subdirectory(dependencies/GLFW)
 
-
 add_executable(GLENGINE
     src/main.cpp
     src/glad.c
@@ -21,9 +20,11 @@ add_executable(GLENGINE
     src/VertexBufferObj.cpp
 )
 
+target_link_libraries(GLENGINE PRIVATE glfw OpenGL::GL)
+
 target_include_directories(GLENGINE 
     PRIVATE 
-        dependencies
+        ${CMAKE_SOURCE_DIR}/includes
+        ${CMAKE_SOURCE_DIR}/resources
+        ${CMAKE_SOURCE_DIR}/dependencies/glad
 )
-
-target_link_libraries(GLENGINE ${GLFW3_LIBRARY})    

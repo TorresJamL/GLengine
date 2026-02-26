@@ -1,6 +1,7 @@
 #include <iostream>
+#include <filesystem>
 
-#include <glad/glad.h>
+#include <glad.h>
 #include <GLFW/glfw3.h>
 
 #include "VertexArrayObj.hpp"
@@ -53,6 +54,7 @@ int main(){
         glfwTerminate();
         return -1;   
     }
+    
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
@@ -60,7 +62,6 @@ int main(){
         cout << "GLAD failed to initialize." << endl;
         return -1;
     }
-    cout << "Made it here" << endl;
     
     glViewport(0, 0, 800, 600);
 
@@ -89,11 +90,7 @@ int main(){
     vao.Bind();
     ebo.Unbind();
 
-    cout << "Is it the shaders?, World!" << endl;
-
-    Shader shdr("resources\\shaders\\default.vert", "resources\\shaders\\default.frag");
-    cout << "no" << endl;
-
+    Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -119,6 +116,5 @@ int main(){
     vao.Delete();
     vbo.Delete();
     shdr.Delete();
-    // glfwTerminate();
     return 0;
 }
