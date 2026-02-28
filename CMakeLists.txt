@@ -12,10 +12,10 @@ add_subdirectory(dependencies/GLFW)
 
 add_executable(GLENGINE
     src/main.cpp
-    src/ElementBufferObj.cpp
+    src/ElementBuffer.cpp
     src/Shader.cpp
-    src/VertexArrayObj.cpp
-    src/VertexBufferObj.cpp
+    src/VertexArray.cpp
+    src/VertexBuffer.cpp
 )
 
 target_link_libraries(GLENGINE PRIVATE glfw OpenGL::GL)

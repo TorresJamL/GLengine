@@ -3,9 +3,9 @@
 #include <glad.h>
 #include <GLFW/glfw3.h>
 
-#include "VertexArrayObj.hpp"
-#include "ElementBufferObj.hpp"
-#include "VertexBufferObj.hpp"
+#include "VertexArray.hpp"
+#include "ElementBuffer.hpp"
+#include "VertexBuffer.hpp"
 #include "Shader.hpp"
 
 using namespace std;

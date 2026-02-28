@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VertexBufferObj.hpp"
+#include "VertexBuffer.hpp"
 
 class VAO {
 public:
