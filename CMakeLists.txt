@@ -12,7 +12,6 @@ add_subdirectory(dependencies/GLFW)
 
 add_executable(GLENGINE
     src/main.cpp
-    src/glad.c
     src/ElementBufferObj.cpp
     src/Shader.cpp
     src/VertexArrayObj.cpp
@@ -25,5 +24,10 @@ target_include_directories(GLENGINE
     PRIVATE 
         ${CMAKE_SOURCE_DIR}/includes
         ${CMAKE_SOURCE_DIR}/resources
-        ${CMAKE_SOURCE_DIR}/dependencies/glad
+        ${CMAKE_SOURCE_DIR}/dependencies/glad/include
+        ${CMAKE_SOURCE_DIR}/dependencies/glad/include/glad
+)
+
+target_sources(GLENGINE PRIVATE
+    dependencies/glad/src/glad.c
 )
