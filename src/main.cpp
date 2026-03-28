@@ -2,6 +2,9 @@
 
 #include <glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "VertexArray.hpp"
 #include "ElementBuffer.hpp"
@@ -57,11 +60,12 @@ int main(){
     glViewport(0, 0, 800, 600);
 
     // Vertex stuff
-    float vertices[] = { // x, y, z per vertex
-         0.5f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f
+    float vertices[] = { 
+        // pos              // colors           // tex coords
+         0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+         0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
     }; 
 
     GLuint indicies[] = {
@@ -73,20 +77,51 @@ int main(){
     EBO ebo(indicies, sizeof(indicies));
     VBO vbo(vertices, sizeof(vertices));
     VAO vao;
+    
     vao.Bind();
 
     ebo.Bind();
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0); // 3 times because x, y, z
+    vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); 
 
     vbo.Unbind();
     vao.Unbind();
     ebo.Unbind();
 
+    // Texture shenanigans
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    {// demo camera work
+        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // +z goes outta screen torward us
+        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+
+        glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
+
+        glm::mat4 view = glm::lookAt(
+            cameraPos,
+            cameraTarget,
+            up
+        );
+
+        const float radius = 10.0f;
+    }
+
     cout << "Beginning render loop." << endl;
+    glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window)){
         // input
@@ -99,6 +134,15 @@ int main(){
         shdr.Use();
         shdr.ApplyAspectRatio(aspect);
         vao.Bind();
+
+        // float camX = sin(glfwGetTime()) * radius;
+        // float camZ = cos(glfwGetTime()) * radius;
+
+        // glm::mat4 view = glm::lookAt(
+        //     glm::vec3(camX, 0.0f, camZ),
+        //     cameraTarget,
+        //     up
+        // );
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

@@ -22,6 +22,8 @@ public:
     void Use();
     void Delete();
     void ApplyAspectRatio(float aspect);
+    
+    // int getUniformLocation(cstr uniform);
 private:
     void compileErrors(GLuint shader, cstr type);
 };
