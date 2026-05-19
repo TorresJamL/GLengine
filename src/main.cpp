@@ -2,9 +2,12 @@
 
 #include <glad.h>
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <stb_image.h>
 
 #include "VertexArray.hpp"
 #include "ElementBuffer.hpp"
@@ -64,8 +67,8 @@ int main(){
         // pos              // colors           // tex coords
          0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
          0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
     }; 
 
     GLuint indicies[] = {
@@ -81,47 +84,59 @@ int main(){
     vao.Bind();
 
     ebo.Bind();
+
+    vbo.Bind();
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); 
+    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); 
     vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); 
 
-    vbo.Unbind();
-    vao.Unbind();
-    ebo.Unbind();
+    // vbo.Unbind();
+    // vao.Unbind();
+    // ebo.Unbind();
 
+    // GLM shenanigans
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5)); 
+    // End of GLM 
+    
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    
     // Texture shenanigans
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    int width, height, nrChannels; // nrChannels is number of color channels
+    stbi_set_flip_vertically_on_load(true); // stbi load flipped bcuz of gl coords
+    unsigned char *data = stbi_load("../../resources/assets/me.png", &width, &height, &nrChannels, 0);
+    if(data){
+        GLenum format;
+        if (nrChannels == 3)
+            format = GL_RGB;
+        else if (nrChannels == 4)
+            format = GL_RGBA;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        cerr << "Failed to load texture." << endl;
+        exit(EXIT_FAILURE);
+    }
+    stbi_image_free(data);
 
     Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    {// demo camera work
-        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // +z goes outta screen torward us
-        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-        glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
-
-        glm::mat4 view = glm::lookAt(
-            cameraPos,
-            cameraTarget,
-            up
-        );
-
-        const float radius = 10.0f;
-    }
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     cout << "Beginning render loop." << endl;
     glEnable(GL_DEPTH_TEST);
+
+    shdr.Use();
+    glUniform1i(glGetUniformLocation(shdr.ID, "ourTex"), 0);
+    unsigned int transformLoc = glGetUniformLocation(shdr.ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     while (!glfwWindowShouldClose(window)){
         // input
@@ -129,21 +144,25 @@ int main(){
 
         // rendering commands here
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
 
         shdr.Use();
+        
+        // continous rotation
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        glUniform1i(glGetUniformLocation(shdr.ID, "ourTex"), 0);
+        unsigned int transformLoc = glGetUniformLocation(shdr.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        // continous rotation
+
         shdr.ApplyAspectRatio(aspect);
         vao.Bind();
-
-        // float camX = sin(glfwGetTime()) * radius;
-        // float camZ = cos(glfwGetTime()) * radius;
-
-        // glm::mat4 view = glm::lookAt(
-        //     glm::vec3(camX, 0.0f, camZ),
-        //     cameraTarget,
-        //     up
-        // );
-
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Event / buffer handling here

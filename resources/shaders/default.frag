@@ -8,5 +8,5 @@ in vec2 TexCoord;
 uniform sampler2D ourTex;
 
 void main(){
-    color = texture(ourTex, TexCoord);
+    color = texture(ourTex, TexCoord); // * vec4(ourColor, 1.0); // Mixes the texture color with our color
 }

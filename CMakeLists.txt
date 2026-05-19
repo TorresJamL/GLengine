@@ -18,6 +18,7 @@ add_executable(GLENGINE
     src/Shader.cpp
     src/VertexArray.cpp
     src/VertexBuffer.cpp
+    src/stb_image.cpp
 )
 
 target_link_libraries(GLENGINE PRIVATE glfw OpenGL::GL)

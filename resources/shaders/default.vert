@@ -7,12 +7,17 @@ out vec3 ourColor;
 out vec2 TexCoord;
 
 uniform float aspect;
+uniform mat4 transform;
 
 void main(){
-    vec3 scaledPos = aPos;
-    scaledPos.x /= aspect;
-    gl_Position = vec4(scaledPos, 1.0);
-
+    if (aspect != 0.0f) {
+        vec3 scaledPos = aPos;
+        scaledPos.x /= aspect;
+        gl_Position = transform * vec4(scaledPos, 1.0);
+    } else {
+        gl_Position = transform * vec4(aPos, 1.0f);
+    }
+    
     ourColor = aColor;
     TexCoord = aTexCoord;
 }
