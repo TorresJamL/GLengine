@@ -16,6 +16,7 @@ add_executable(GLENGINE
     src/main.cpp
     src/ElementBuffer.cpp
     src/Shader.cpp
+    src/Texture.cpp
     src/VertexArray.cpp
     src/VertexBuffer.cpp
     src/stb_image.cpp

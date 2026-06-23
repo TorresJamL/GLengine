@@ -61,6 +61,10 @@ void Shader::ApplyAspectRatio(float aspect) {
 	glUniform1f(aspectLoc, aspect);
 }
 
+GLuint Shader::getUniformLoc(const std::string &unif_name) const {
+	return glGetUniformLocation(ID, unif_name.c_str());
+}
+
 void Shader::setBool(const std::string &name, bool value) const {         
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
 }
