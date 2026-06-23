@@ -2,19 +2,36 @@ cmake_minimum_required(VERSION 3.26.0)
 project(GLENGINE VERSION 1.0.0)
 cmake_policy(SET CMP0027 NEW)
 
-set(CMAKE_C_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-set(CMAKE_CXX_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(OpenGL REQUIRED)
-find_package(GLFW3 REQUIRED)
+add_subdirectory(dependencies/GLFW)
+add_subdirectory(dependencies/glm)
 
 add_executable(GLENGINE
     src/main.cpp
-    src/glad.c
+    src/ElementBuffer.cpp
+    src/Shader.cpp
+    src/Texture.cpp
+    src/VertexArray.cpp
+    src/VertexBuffer.cpp
+    src/stb_image.cpp
 )
 
-target_include_directories(GLENGINE PRIVATE dependencies includes)
+target_link_libraries(GLENGINE PRIVATE glfw OpenGL::GL)
 
-target_link_libraries(GLENGINE ${GLFW3_LIBRARY})
+target_include_directories(GLENGINE 
+    PRIVATE 
+        ${CMAKE_SOURCE_DIR}/includes
+        ${CMAKE_SOURCE_DIR}/resources
+        ${CMAKE_SOURCE_DIR}/dependencies/glad/include
+        ${CMAKE_SOURCE_DIR}/dependencies/glad/include/glad
+)
+
+target_sources(GLENGINE PRIVATE
+    dependencies/glad/src/glad.c
+)

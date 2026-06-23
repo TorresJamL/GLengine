@@ -2,8 +2,13 @@
 
 out vec4 color;
 
-uniform vec4 ourColor;
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTex;
+uniform vec3 objColor;
+uniform vec3 lightColor;
 
 void main(){
-    color = ourColor;
+    color = texture(ourTex, TexCoord); // * vec4(ourColor, 1.0); // Mixes the texture color with our color
 }

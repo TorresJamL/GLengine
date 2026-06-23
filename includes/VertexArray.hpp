@@ -1,8 +1,6 @@
 #pragma once
 
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "VertexBufferObj.hpp"
+#include "VertexBuffer.hpp"
 
 class VAO {
 public:
