@@ -1,6 +1,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <iostream>
+#include <ctime>
 
 #include <glad.h>
 #include <GLFW/glfw3.h>
@@ -18,6 +19,7 @@
 #include "Shader.hpp"
 #include "Camera.hpp"
 #include "../includes/Texture.hpp" // There's definitely a better solution to this but ehh
+#include "Shapes.hpp"
 
 using namespace std;
 
@@ -38,6 +40,10 @@ Camera cam;
 // time
 double deltaTime = 0.0;
 double lastFrame = 0.0;
+
+// time based on cpu 
+double cDeltaTime = 0.0;
+double lastCFrame = 0.0;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -217,49 +223,22 @@ int main(){
 
     //** Light cube
     glm::vec3 lightCubePosition = glm::vec3(0.0f, 0.0f, 6.0f); // 3f backwards from camera
-    float lightCubeVerticies[] = {
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
 
-        -0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
+    using namespace G_Framework;
+    vector<Cube> cubes = {
+        Cube(glm::vec3( 0.0f,  0.0f,  0.0f)), 
+        Cube(glm::vec3( 2.0f,  5.0f, -15.0f)), 
+        Cube(glm::vec3(-1.5f, -2.2f, -2.5f)),  
+        Cube(glm::vec3(-3.8f, -2.0f, -12.3f)),  
+        Cube(glm::vec3( 2.4f, -0.4f, -3.5f)),  
+        Cube(glm::vec3(-1.7f,  3.0f, -7.5f)),  
+        Cube(glm::vec3( 1.3f, -2.0f, -2.5f)),  
+        Cube(glm::vec3( 1.5f,  2.0f, -2.5f)), 
+        Cube(glm::vec3( 1.5f,  0.2f, -1.5f)), 
+        Cube(glm::vec3(-1.3f,  1.0f, -1.5f)) 
     };
+
+    Cube lightCube(glm::vec3(0.0f, 0.0f, 6.0f));
 
     //* Light Cube VAO
     VAO lightVao;
@@ -279,34 +258,42 @@ int main(){
     vao.Unbind();
     
     lightVao.Bind();
-    lightVao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+    lightVao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0);
     lightVao.Unbind();
 
     vbo.Unbind();
     // ebo.Unbind();
     
-    Texture texture("../../resources/assets/me.png", GL_TEXTURE_2D);
+    Texture texture;
+    texture.create2DTexture("../../resources/assets/me.png");
     texture.setTexParamInt(GL_TEXTURE_WRAP_S, GL_REPEAT);
     texture.setTexParamInt(GL_TEXTURE_WRAP_T, GL_REPEAT);
     texture.setTexParamInt(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     texture.setTexParamInt(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     texture.Free();
+    
+    glEnable(GL_DEPTH_TEST);
 
     Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
-    Shader lightingShdr();
-
-    glEnable(GL_DEPTH_TEST);
-    
     shdr.Use();
     shdr.setInt("ourTex", 0);
+    shdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+
+    Shader lightShdr("../../resources/shaders/default.vert", "../../resources/shaders/light.frag");
+    lightShdr.Use();
+    lightShdr.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+    lightShdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
     
     glm::mat4 view;
     
     const float radius = 10.0f;
     
 	double currentFrame = 0.0;
+	double currentCFrame = 0.0;
     
     double lastTime = glfwGetTime();
+    double lastCTime;
+
     int nbFrames = 0;
     
     cout << "Beginning render loop." << endl;
@@ -325,11 +312,11 @@ int main(){
             lastTime += 1.0;
         }
         // rendering commands here
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE0); // TODO: Replace with abstracted call
+        // glBindTexture(GL_TEXTURE_2D, texture1); // Texture is pre-binded        
 
         shdr.Use();
 
@@ -349,6 +336,21 @@ int main(){
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        lightShdr.Use();
+        lightShdr.setMat4("view", cam.view);
+        lightShdr.setMat4("projection", cam.projection);
+
+        lightVao.Bind();
+
+        for (unsigned int i = 0; i < 1; i++) { // Not necessary i > 1
+            glm::mat4 lightModel = glm::mat4(1.0f);
+            lightModel = glm::translate(lightModel, lightCubePosition + glm::vec3(0.0f, 0.0f, i * 5.0f));
+            lightModel = glm::scale(lightModel, glm::vec3(0.2f)); 
+            lightShdr.setMat4("model", lightModel);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // Event / buffer handling here
         glfwSwapBuffers(window);

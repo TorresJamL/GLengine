@@ -22,8 +22,8 @@ public:
     GLenum texType;
     string asset_file_path; // File directory
 
-    Texture(string asset_file_path, GLenum texType, bool flip_vertically_on_load, int desired_channels);
-    Texture(string asset_file_path, GLenum texType);
+    // Texture(string asset_file_path, GLenum texType, bool flip_vertically_on_load, int desired_channels);
+    Texture();
 
     // void GenTextures(GLsizei n, GLuint* textures);
     void Bind();
@@ -38,6 +38,9 @@ public:
     void restoreAssetData() {
         throw NotImplemented();
     }
+
+    void create2DTexture(string asset_file_path, bool flip_vertically_on_load = true, int desired_channels = 0);
+    void createCubeMapTexture(string asset_file_path, bool flip_vertically_on_load, int desired_channels);
 
     void Free();
 private:
