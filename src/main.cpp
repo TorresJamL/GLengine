@@ -221,12 +221,9 @@ int main(){
         1, 2, 3  // Tri 2
     };
 
-    //** Light cube
-    glm::vec3 lightCubePosition = glm::vec3(0.0f, 0.0f, 6.0f); // 3f backwards from camera
-
     using namespace G_Framework;
     vector<Cube> cubes = {
-        Cube(glm::vec3( 0.0f,  0.0f,  0.0f)), 
+        Cube(glm::vec3( 0.0f,  0.0f,  -3.0f)), 
         Cube(glm::vec3( 2.0f,  5.0f, -15.0f)), 
         Cube(glm::vec3(-1.5f, -2.2f, -2.5f)),  
         Cube(glm::vec3(-3.8f, -2.0f, -12.3f)),  
@@ -238,14 +235,14 @@ int main(){
         Cube(glm::vec3(-1.3f,  1.0f, -1.5f)) 
     };
 
-    Cube lightCube(glm::vec3(0.0f, 0.0f, 6.0f));
+    Cube lightCube(glm::vec3(0.0f, 0.0f, 6.0f), glm::vec3(1.0f));
 
     //* Light Cube VAO
     VAO lightVao;
     lightVao.Unbind();
 
     // EBO ebo(indicies, sizeof(indicies));
-    VBO vbo(vertices, sizeof(vertices));
+    VBO vbo(Cube::cubeVerticesData);
     VAO vao;
     
     vao.Bind();
@@ -253,12 +250,13 @@ int main(){
     // ebo.Bind();
 
     vbo.Bind();
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0); 
-    vao.LinkAttrib(vbo, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float))); 
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); 
+    vao.LinkAttrib(vbo, 1, 2, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); 
+    vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, 8 * sizeof(float), (void*)(5 * sizeof(float))); 
     vao.Unbind();
     
     lightVao.Bind();
-    lightVao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0);
+    lightVao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
     lightVao.Unbind();
 
     vbo.Unbind();
@@ -277,12 +275,19 @@ int main(){
     Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
     shdr.Use();
     shdr.setInt("ourTex", 0);
-    shdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+    shdr.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+    shdr.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); 
+    shdr.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+    shdr.setVec3("material.ambient", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+    shdr.setVec3("material.diffuse", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+    shdr.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    shdr.setFloat("material.shininess", 32.0f);
 
     Shader lightShdr("../../resources/shaders/default.vert", "../../resources/shaders/light.frag");
     lightShdr.Use();
-    lightShdr.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+    lightShdr.setVec3("objectColor",  1.0f, 1.0f, 1.0f);
     lightShdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+    lightShdr.setVec3("viewPos", cam.position);
     
     glm::mat4 view;
     
@@ -296,6 +301,9 @@ int main(){
 
     int nbFrames = 0;
     
+
+    float velocity = 3.0f;
+
     cout << "Beginning render loop." << endl;
     while (!glfwWindowShouldClose(window)){
         currentFrame = glfwGetTime();
@@ -323,34 +331,56 @@ int main(){
         cam.ProcessMouse(window, deltaTime);
         cam.Matrix(fov, aspect, 0.1f, 100.0f, shdr);
 
+        // if (cubes[0].get_position().z >= 5.0f && velocity > 0) {
+        //     velocity *= -1;
+        // } else if (cubes[0].get_position().z <= -15.0f && velocity < 0) {
+        //     velocity *= -1;
+        // } 
+        // cubes[0].set_z(cubes[0].get_position().z + (velocity * deltaTime));
+
+        shdr.setVec3("light.position", lightCube.get_position());
+        shdr.setVec3("viewPos", cam.position);
+        shdr.setMat4("view", cam.view);
+        shdr.setMat4("projection", cam.projection);
+
         vao.Bind(); 
-        for (unsigned int i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20 * i;
-            if (i % 3 == 0) {
-                model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            } else model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shdr.setMat4("model", model);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubes[0].get_position());
+        shdr.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        // for (unsigned int i = 1; i < cubes.size(); i++) {
+        //     glm::mat4 model = glm::mat4(1.0f);
+        //     model = glm::translate(model, cubes[i].get_position());
+        //     float angle = 20 * i;
+        //     if (i % 3 == 0) {
+        //         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        //     } else model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        //     shdr.setMat4("model", model);
+        
+        //     glDrawArrays(GL_TRIANGLES, 0, 36);
+        // }
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        
         lightShdr.Use();
         lightShdr.setMat4("view", cam.view);
         lightShdr.setMat4("projection", cam.projection);
 
         lightVao.Bind();
 
-        for (unsigned int i = 0; i < 1; i++) { // Not necessary i > 1
-            glm::mat4 lightModel = glm::mat4(1.0f);
-            lightModel = glm::translate(lightModel, lightCubePosition + glm::vec3(0.0f, 0.0f, i * 5.0f));
-            lightModel = glm::scale(lightModel, glm::vec3(0.2f)); 
-            lightShdr.setMat4("model", lightModel);
+        float lightX = 10.0f * glm::sin(glfwGetTime() + ((velocity - 1) * deltaTime)); 
+        float lightZ = 10.0f * glm::cos(glfwGetTime() + ((velocity - 1) * deltaTime));
+        lightCube.set_x(lightX);
+        lightCube.set_z(lightZ);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        glm::mat4 lightModel = glm::mat4(1.0f);
+        lightModel = glm::translate(lightModel, lightCube.get_position());
+        lightModel = glm::scale(lightModel, lightCube.get_scale()); 
+        lightShdr.setMat4("model", lightModel);
+        lightShdr.setVec3("lightPos", lightCube.get_position());
+        lightShdr.setVec3("viewPos", cam.position);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Event / buffer handling here
         glfwSwapBuffers(window);
