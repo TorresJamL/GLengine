@@ -22,7 +22,3 @@ private:
     string message;
     string asset_path;
 };
-
-namespace G_MATH {
-    
-} 
