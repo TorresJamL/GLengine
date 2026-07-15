@@ -24,7 +24,7 @@ add_executable(GLENGINE
     src/stb_image.cpp
 )
 
-target_link_libraries(GLENGINE PRIVATE glfw OpenGL::GL)
+target_link_libraries(GLENGINE PRIVATE glfw glm::glm OpenGL::GL)
 
 target_include_directories(GLENGINE 
     PRIVATE 
