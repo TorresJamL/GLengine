@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,11 +10,12 @@
 #include <glad.h>
 #include "GLFW/glfw3.h"
 
-#include <stb_image.h>
+#include "stb_image.h"
 
 #include "utils.hpp"
 
 using namespace std;
+using namespace utilities;
 
 class Texture {
 public:
@@ -22,7 +24,6 @@ public:
     GLenum texType;
     string asset_file_path; // File directory
 
-    // Texture(string asset_file_path, GLenum texType, bool flip_vertically_on_load, int desired_channels);
     Texture();
 
     // void GenTextures(GLsizei n, GLuint* textures);
@@ -40,7 +41,7 @@ public:
     }
 
     void create2DTexture(string asset_file_path, bool flip_vertically_on_load = true, int desired_channels = 0);
-    void createCubeMapTexture(string asset_file_path, bool flip_vertically_on_load, int desired_channels);
+    void createCubeMapTexture(string asset_file_path, bool isLandscapeOriented = true, int desired_channels = 0);
 
     void Free();
 private:

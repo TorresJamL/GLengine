@@ -1,4 +1,4 @@
-#include "ElementBuffer.hpp"
+#include "../includes/ElementBuffer.hpp"
 
 EBO::EBO(GLuint* indices, GLsizeiptr size) {
     glGenBuffers(1, &ID);

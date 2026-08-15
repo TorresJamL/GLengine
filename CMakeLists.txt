@@ -15,21 +15,21 @@ add_subdirectory(dependencies/GLFW)
 add_subdirectory(dependencies/glm)
 
 add_executable(GLENGINE
-    src/main.cpp
-    src/ElementBuffer.cpp
-    src/Shader.cpp
-    src/Texture.cpp
-    src/VertexArray.cpp
-    src/VertexBuffer.cpp
-    src/stb_image.cpp
+    J_engine/J_app/main.cpp
+    J_engine/J_renderer/src/ElementBuffer.cpp
+    J_engine/J_renderer/src/Shader.cpp
+    J_engine/J_renderer/src/Texture.cpp
+    J_engine/J_renderer/src/VertexArray.cpp
+    J_engine/J_renderer/src/VertexBuffer.cpp
+    J_engine/J_renderer/src/stb_image.cpp
 )
 
 target_link_libraries(GLENGINE PRIVATE glfw glm::glm OpenGL::GL)
 
 target_include_directories(GLENGINE 
     PRIVATE 
-        ${CMAKE_SOURCE_DIR}/includes
-        ${CMAKE_SOURCE_DIR}/resources
+        ${CMAKE_SOURCE_DIR}J_engine/J_renderer/includes
+        ${CMAKE_SOURCE_DIR}J_engine/J_renderer/resources
         ${CMAKE_SOURCE_DIR}/dependencies/glad/include
         ${CMAKE_SOURCE_DIR}/dependencies/glad/include/glad
 )

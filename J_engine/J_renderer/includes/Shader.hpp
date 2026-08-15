@@ -13,6 +13,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "utils.hpp"
+using namespace utilities;
+
 std::string process_file(const char* filename);
 
 typedef const char* cstr;

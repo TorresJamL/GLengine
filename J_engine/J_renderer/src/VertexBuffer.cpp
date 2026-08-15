@@ -1,4 +1,4 @@
-#include "VertexBuffer.hpp"
+#include "../includes/VertexBuffer.hpp"
 
 VBO::VBO(GLfloat* vertices, GLsizeiptr size){
     glGenBuffers(1, &ID);

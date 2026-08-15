@@ -26,6 +26,7 @@ uniform Light light;
 uniform sampler2D ourTex;
 uniform vec3 objColor;
 uniform vec3 viewPos;
+uniform bool useTex = false;
 
 void main() {
     // Ambient
@@ -44,5 +45,10 @@ void main() {
     vec3 specular = (material.specular * spec) * light.specular;
     
     vec3 result = (ambient + diffuse + specular);
-    color = texture(ourTex, TexCoord) * vec4(result, 1.0); // Mixes the texture color with our color
+
+    if (useTex) {
+        color = texture(ourTex, TexCoord) * vec4(result, 1.0); // Mixes the texture color with our color    
+    } else {
+        color = vec4(1.0f, 0.0f, 0.0f, 1.0) * vec4(result, 1.0);
+    }
 }
