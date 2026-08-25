@@ -29,6 +29,17 @@ namespace utilities {
         string asset_path;
     };
     
+    class TexUnitCapExceeded : public exception {
+    public:
+        TexUnitCapExceeded(const char* msg) : message(msg) {}
+
+        const char* what() const noexcept override {
+            return message.c_str();
+        }
+    private:
+        string message;
+    };
+
     class FileNotFoundError : public exception {
     public:
         FileNotFoundError(const char* msg, const char* file_path) : message(msg), file_path(file_path) {}

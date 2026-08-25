@@ -146,22 +146,12 @@ int main(){
     glViewport(0, 0, 800, 600);
 
     using namespace G_Framework;
-    vector<Cube> cubes = {
-        Cube(glm::vec3( 0.0f,  0.0f,  -3.0f)), 
-        Cube(glm::vec3( 2.0f,  5.0f, -15.0f)), 
-        Cube(glm::vec3(-1.5f, -2.2f, -2.5f)),  
-        Cube(glm::vec3(-3.8f, -2.0f, -12.3f)),  
-        Cube(glm::vec3( 2.4f, -0.4f, -3.5f)),  
-        Cube(glm::vec3(-1.7f,  3.0f, -7.5f)),  
-        Cube(glm::vec3( 1.3f, -2.0f, -2.5f)),  
-        Cube(glm::vec3( 1.5f,  2.0f, -2.5f)), 
-        Cube(glm::vec3( 1.5f,  0.2f, -1.5f)), 
-        Cube(glm::vec3(-1.3f,  1.0f, -1.5f)) 
-    };
+    vector<Cube> cubes = {};
+    cubes.push_back(Cube(glm::vec3(0, 0, -3)));
 
     cout << "Cubes Made." << endl;
 
-    Cube lightCube(glm::vec3(0.0f, 0.0f, 6.0f), glm::vec3(1.0f));
+    Cube lightCube(glm::vec3(0.0f, 2.0f, 6.0f), glm::vec3(1.0f));
     cout << "Light Cube Made." << endl;
 
     //* Light Cube VAO
@@ -194,30 +184,31 @@ int main(){
     fs::path sourceDir = sourcePath.parent_path();
     fs::current_path(sourceDir);
 
-    // Texture texture;
-    // try {
-    //     texture.create2DTexture("../J_renderer/resources/assets/me.png");
-    //     texture.setTexParamInt(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    //     texture.setTexParamInt(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //     texture.setTexParamInt(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //     texture.setTexParamInt(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //     texture.Free();
-    //     cout << "Textures Defined." << endl;
-    // } catch (const exception& err) {
-    //     cerr << "Error: " << err.what() << endl;
-    //     exit(1);
-    // }
-
-    Texture cubemap_tex;
+    Texture texture;
     try {
-        cubemap_tex.createCubeMapTexture("../J_renderer/resources/assets/metalboxidk.png");
-        cubemap_tex.Free();
+        texture.create2DTexture("../J_renderer/resources/assets/me.png");
+        texture.setTexParamInt(GL_TEXTURE_WRAP_S, GL_REPEAT);
+        texture.setTexParamInt(GL_TEXTURE_WRAP_T, GL_REPEAT);
+        texture.setTexParamInt(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        texture.setTexParamInt(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texture.Free();
+        cout << "Textures Defined." << endl;
     } catch (const exception& err) {
         cerr << "Error: " << err.what() << endl;
         exit(1);
     }
 
+    // Texture cubemap_tex;
+    // try {
+    //     cubemap_tex.createCubeMapTexture("../J_renderer/resources/assets/metalboxidk.png");
+    //     cubemap_tex.Free();
+    // } catch (const exception& err) {
+    //     cerr << "Error: " << err.what() << endl;
+    //     exit(1);
+    // }
+
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     Shader shdr("../J_renderer/resources/shaders/default.vert", "../J_renderer/resources/shaders/default.frag");
     try {
@@ -277,7 +268,6 @@ int main(){
 
     int nbFrames = 0;
     
-
     float velocity = 3.0f;
 
     cout << "Beginning render loop." << endl;
@@ -302,10 +292,10 @@ int main(){
         glActiveTexture(GL_TEXTURE0); // TODO: Replace with abstracted call
         // glBindTexture(GL_TEXTURE_2D, texture1); // Texture is pre-binded        
 
-        cubemapShdr.Use();
+        shdr.Use();
 
         cam.ProcessMouse(window, deltaTime);
-        cam.Matrix(fov, aspect, 0.1f, 100.0f, cubemapShdr);
+        cam.Matrix(fov, aspect, 0.1f, 100.0f, shdr);
 
         // if (cubes[0].get_position().z >= 5.0f && velocity > 0) {
         //     velocity *= -1;
@@ -314,16 +304,18 @@ int main(){
         // } 
         // cubes[0].set_z(cubes[0].get_position().z + (velocity * deltaTime));
 
-        cubemapShdr.setVec3("light.position", lightCube.get_position());
-        cubemapShdr.setVec3("viewPos", cam.position);
-        cubemapShdr.setMat4("view", cam.view);
-        cubemapShdr.setMat4("projection", cam.projection);
+        shdr.setVec3("light.position", lightCube.get_position());
+        shdr.setVec3("viewPos", cam.position);
+        shdr.setMat4("view", cam.view);
+        shdr.setMat4("projection", cam.projection);
 
         vao.Bind(); 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, cubes[0].get_position());
-        cubemapShdr.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (auto cube : cubes) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cube.get_position());
+            shdr.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         
         lightShdr.Use();
         lightShdr.setMat4("view", cam.view);

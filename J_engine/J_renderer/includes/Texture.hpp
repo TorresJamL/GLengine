@@ -19,14 +19,12 @@ using namespace utilities;
 
 class Texture {
 public:
-    const static int maxTexUnits = GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
     GLuint ID;
     GLenum texType;
     string asset_file_path; // File directory
 
     Texture();
 
-    // void GenTextures(GLsizei n, GLuint* textures);
     void Bind();
     void Unbind();
     void setTexParamInt(GLenum param_name, GLint param);
@@ -44,6 +42,10 @@ public:
     void createCubeMapTexture(string asset_file_path, bool isLandscapeOriented = true, int desired_channels = 0);
 
     void Free();
+
+    bool operator==(const Texture& t) {
+        return (ID == t.ID) && (texType == t.texType) && (asset_file_path == t.asset_file_path);
+    }
 private:
     unsigned char *data;
     int width, height, nrChannels;
