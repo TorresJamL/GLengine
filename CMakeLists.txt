@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(OpenGL REQUIRED)
 add_subdirectory(dependencies/GLFW)
 add_subdirectory(dependencies/glm)
+add_subdirectory(dependencies/assimp)
 
 add_executable(GLENGINE
     J_engine/J_app/main.cpp
