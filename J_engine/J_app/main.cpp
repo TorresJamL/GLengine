@@ -11,15 +11,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <stb_image.h>
-
-#include "VertexArray.hpp"
-#include "ElementBuffer.hpp"
-#include "VertexBuffer.hpp"
-#include "Shader.hpp"
-#include "Camera.hpp"
-#include "../includes/Texture.hpp" // There's definitely a better solution to this but ehh
-#include "Shapes.hpp"
+#include "../J_renderer/includes/Renderer.h"
+#include <filesystem>
+#include <assimp/version.h>
 
 using namespace std;
 
@@ -138,6 +132,7 @@ int main(){
         glfwTerminate();
         return -1;   
     }
+    cout << "Window Created Successfully." << endl;
     
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -148,94 +143,18 @@ int main(){
         cout << "GLAD failed to initialize." << endl;
         return -1;
     }
+    cout << "GLAD initialized" << endl;
     
     glViewport(0, 0, 800, 600);
 
-    // Vertex stuff
-    // float vertices[] = { 
-    //     // pos              // colors           // tex coords
-    //      0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-    //      0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-    //     -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-    //     -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-    // }; 
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)    
-    };
-
-    GLuint indicies[] = {
-        0, 1, 3, // Tri 1
-        1, 2, 3  // Tri 2
-    };
-
     using namespace G_Framework;
-    vector<Cube> cubes = {
-        Cube(glm::vec3( 0.0f,  0.0f,  -3.0f)), 
-        Cube(glm::vec3( 2.0f,  5.0f, -15.0f)), 
-        Cube(glm::vec3(-1.5f, -2.2f, -2.5f)),  
-        Cube(glm::vec3(-3.8f, -2.0f, -12.3f)),  
-        Cube(glm::vec3( 2.4f, -0.4f, -3.5f)),  
-        Cube(glm::vec3(-1.7f,  3.0f, -7.5f)),  
-        Cube(glm::vec3( 1.3f, -2.0f, -2.5f)),  
-        Cube(glm::vec3( 1.5f,  2.0f, -2.5f)), 
-        Cube(glm::vec3( 1.5f,  0.2f, -1.5f)), 
-        Cube(glm::vec3(-1.3f,  1.0f, -1.5f)) 
-    };
+    vector<Cube> cubes = {};
+    cubes.push_back(Cube(glm::vec3(0, 0, -3)));
 
-    Cube lightCube(glm::vec3(0.0f, 0.0f, 6.0f), glm::vec3(1.0f));
+    cout << "Cubes Made." << endl;
+
+    Cube lightCube(glm::vec3(0.0f, 2.0f, 6.0f), glm::vec3(1.0f));
+    cout << "Light Cube Made." << endl;
 
     //* Light Cube VAO
     VAO lightVao;
@@ -248,7 +167,7 @@ int main(){
     vao.Bind();
 
     // ebo.Bind();
-
+    
     vbo.Bind();
     vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); 
     vao.LinkAttrib(vbo, 1, 2, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); 
@@ -261,34 +180,85 @@ int main(){
 
     vbo.Unbind();
     // ebo.Unbind();
+    cout << "Vertex Array/Buffer Objects Setup" << endl;
     
+    fs::path sourcePath = fs::absolute(__FILE__);
+    fs::path sourceDir = sourcePath.parent_path();
+    fs::current_path(sourceDir);
+
     Texture texture;
-    texture.create2DTexture("../../resources/assets/me.png");
-    texture.setTexParamInt(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    texture.setTexParamInt(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    texture.setTexParamInt(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    texture.setTexParamInt(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    texture.Free();
-    
+    try {
+        texture.create2DTexture("../J_renderer/resources/assets/me.png");
+        texture.setTexParamInt(GL_TEXTURE_WRAP_S, GL_REPEAT);
+        texture.setTexParamInt(GL_TEXTURE_WRAP_T, GL_REPEAT);
+        texture.setTexParamInt(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        texture.setTexParamInt(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        texture.Free();
+        cout << "Textures Defined." << endl;
+    } catch (const exception& err) {
+        cerr << "Error: " << err.what() << endl;
+        exit(1);
+    }
+
+    // Texture cubemap_tex;
+    // try {
+    //     cubemap_tex.createCubeMapTexture("../J_renderer/resources/assets/metalboxidk.png");
+    //     cubemap_tex.Free();
+    // } catch (const exception& err) {
+    //     cerr << "Error: " << err.what() << endl;
+    //     exit(1);
+    // }
+
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
-    Shader shdr("../../resources/shaders/default.vert", "../../resources/shaders/default.frag");
-    shdr.Use();
-    shdr.setInt("ourTex", 0);
-    shdr.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
-    shdr.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); 
-    shdr.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
-    shdr.setVec3("material.ambient", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
-    shdr.setVec3("material.diffuse", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
-    shdr.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-    shdr.setFloat("material.shininess", 32.0f);
+    Shader shdr("../J_renderer/resources/shaders/default.vert", "../J_renderer/resources/shaders/default.frag");
+    try {
+        shdr.Use();
+        shdr.setInt("ourTex", 0);
+        shdr.setBool("useTex", true);
+        shdr.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        shdr.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); 
+        shdr.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        shdr.setVec3("material.ambient", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+        shdr.setVec3("material.diffuse", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+        shdr.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        shdr.setFloat("material.shininess", 32.0f);
+        cout << "Normal Shader Setup." << endl;
+    } catch (const exception& err) {
+        cerr << "Error: " << err.what() << endl;
+        exit(1);
+    } 
+    Shader lightShdr("../J_renderer/resources/shaders/default.vert", "../J_renderer/resources/shaders/light.frag");
+    try {
+        lightShdr.Use();
+        lightShdr.setVec3("objectColor",  1.0f, 1.0f, 1.0f);
+        lightShdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        lightShdr.setVec3("viewPos", cam.position);
+        cout << "Light Cube Shader Setup." << endl;
+    } catch (const exception& err) {
+        cerr << "Error: " << err.what() << endl;
+        exit(1);
+    }
 
-    Shader lightShdr("../../resources/shaders/default.vert", "../../resources/shaders/light.frag");
-    lightShdr.Use();
-    lightShdr.setVec3("objectColor",  1.0f, 1.0f, 1.0f);
-    lightShdr.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
-    lightShdr.setVec3("viewPos", cam.position);
-    
+    Shader cubemapShdr("../J_renderer/resources/shaders/cubemap.vert", "../J_renderer/resources/shaders/cubemap.frag");
+    try {
+        cubemapShdr.Use();
+        cubemapShdr.setInt("cubeTex", 0);
+        cubemapShdr.setBool("useTex", true);
+        cubemapShdr.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        cubemapShdr.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); 
+        cubemapShdr.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        cubemapShdr.setVec3("material.ambient", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+        cubemapShdr.setVec3("material.diffuse", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
+        cubemapShdr.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        cubemapShdr.setFloat("material.shininess", 32.0f);
+        cout << "Normal Shader Setup." << endl;
+    } catch (const exception& err) {
+        cerr << "Error: " << err.what() << endl;
+        exit(1);
+    } 
+
     glm::mat4 view;
     
     const float radius = 10.0f;
@@ -301,7 +271,6 @@ int main(){
 
     int nbFrames = 0;
     
-
     float velocity = 3.0f;
 
     cout << "Beginning render loop." << endl;
@@ -343,24 +312,14 @@ int main(){
         shdr.setMat4("view", cam.view);
         shdr.setMat4("projection", cam.projection);
 
-        vao.Bind(); 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, cubes[0].get_position());
-        shdr.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        vao.Bind();
 
-        // for (unsigned int i = 1; i < cubes.size(); i++) {
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, cubes[i].get_position());
-        //     float angle = 20 * i;
-        //     if (i % 3 == 0) {
-        //         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        //     } else model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        //     shdr.setMat4("model", model);
-        
-        //     glDrawArrays(GL_TRIANGLES, 0, 36);
-        // }
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        for (auto cube : cubes) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cube.get_position());
+            shdr.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         
         lightShdr.Use();
         lightShdr.setMat4("view", cam.view);

@@ -1,0 +1,31 @@
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec3 aNormal;
+
+out vec3 textureDir;
+out vec3 Normal;
+out vec3 FragPos;
+
+uniform float aspect;
+uniform mat4 transform;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main(){
+    if (aspect != 0.0f) {
+        vec3 scaledPos = aPos;
+        scaledPos.x /= aspect;
+        gl_Position = transform * vec4(scaledPos, 1.0);
+    } else {
+        gl_Position = projection * view * model * vec4(aPos, 1.0);
+    }
+    
+    // ourColor = aColor;
+    // TexCoord = aTexCoord;
+    textureDir = vec3(aPos.xy, aPos.z);
+    FragPos = vec3(model * vec4(aPos, 1.0f));
+    Normal = mat3(transpose(inverse(model))) * aNormal;
+}

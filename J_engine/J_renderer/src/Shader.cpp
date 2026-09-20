@@ -1,7 +1,12 @@
-#include "Shader.hpp"
+#include <stdexcept>
+#include "../includes/Shader.hpp"
 
 using namespace std;
 string process_file(const char* filename) {
+	fs::path filePath(filename);
+    if (!fs::exists(filePath)) {
+        throw FileNotFoundError("Failed to load texture. Path does not exist.", filename);
+    }
     ifstream file(filename);
 
 	if (!file.is_open()) {

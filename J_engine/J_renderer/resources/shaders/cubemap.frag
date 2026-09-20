@@ -16,16 +16,15 @@ struct Light {
 
 out vec4 color;
 
-in vec3 ourColor;
-in vec2 TexCoord;
+in vec3 textureDir;
 in vec3 Normal;
 in vec3 FragPos;  
 
 uniform Material material;
 uniform Light light;
-uniform sampler2D ourTex;
-uniform vec3 objColor;
+uniform samplerCube cubeTex;
 uniform vec3 viewPos;
+uniform bool useTex = false;
 
 void main() {
     // Ambient
@@ -44,5 +43,10 @@ void main() {
     vec3 specular = (material.specular * spec) * light.specular;
     
     vec3 result = (ambient + diffuse + specular);
-    color = texture(ourTex, TexCoord) * vec4(result, 1.0); // Mixes the texture color with our color
+
+    if (useTex) {
+        color = texture(cubeTex, textureDir) * vec4(result, 1.0); // Mixes the texture color with our color    
+    } else {
+        color = vec4(1.0f, 0.0f, 0.0f, 1.0) * vec4(result, 1.0);
+    }
 }
