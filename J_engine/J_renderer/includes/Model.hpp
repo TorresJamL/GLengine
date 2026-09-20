@@ -1,13 +1,16 @@
+#pragma once
 #include "Mesh.hpp"
+#include <iostream>
+#include <string>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <stb_image.h>
+#include "stb_image.h"
 
 class Model {
     public:
-        Model(char *path) {
+        Model(string path) {
             loadModel(path);
         }
         
@@ -15,7 +18,7 @@ class Model {
             for (auto mesh : meshes) mesh.Draw(shader);
         }
     private:
-        vector<Texture> texturesLoaded;
+        vector<MeshSys::Texture> texturesLoaded;
         vector<Mesh> meshes;
         string directory;
 
@@ -24,6 +27,7 @@ class Model {
             const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
             if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+                
                 cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
                 return;
             }
@@ -45,7 +49,7 @@ class Model {
         Mesh processMesh(aiMesh *mesh, const aiScene *scene) {
             vector<Vertex> vertices;
             vector<unsigned int> indices;
-            vector<Texture> textures;
+            vector<MeshSys::Texture> textures;
 
             for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
                 Vertex vertex;
@@ -80,10 +84,10 @@ class Model {
             // TODO: Material Processing
             if (mesh->mMaterialIndex >= 0) {
                 aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-                vector<Texture> diffuseMaps = loadMaterialTextures(
+                vector<MeshSys::Texture> diffuseMaps = loadMaterialTextures(
                     material, aiTextureType_DIFFUSE, "texture_diffuse");
                 textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-                vector<Texture> specularMaps = loadMaterialTextures(
+                vector<MeshSys::Texture> specularMaps = loadMaterialTextures(
                     material, aiTextureType_SPECULAR, "texture_specular");
                 textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
             }
@@ -91,15 +95,27 @@ class Model {
             return Mesh(vertices, indices, textures);
         }
 
-        vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {
-            vector<Texture> textures;
+        vector<MeshSys::Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName) {
+            vector<MeshSys::Texture> textures;
             for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
                 aiString str;
                 mat->GetTexture(type, i, &str);
-                Texture texture;
-                texture.id = TextureFromFile(str.C_Str(), directory);
-                texture.type = typeName;
-                texture.path = str.data;
+                bool skip = false;
+                for (const auto& textureL: texturesLoaded) {
+                    if (std::strcmp(textureL.path.c_str(), str.C_Str())) {
+                        textures.push_back(textureL);
+                        skip = true;
+                        break;
+                    }
+                }
+                if (!skip) {
+                    MeshSys::Texture texture;
+                    texture.id = TextureFromFile(str.C_Str(), directory);
+                    texture.type = typeName;
+                    texture.path = str.C_Str();
+                    textures.push_back(texture);
+                    texturesLoaded.push_back(texture);
+                }
             }
             return textures;
         } 

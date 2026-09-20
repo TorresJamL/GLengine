@@ -12,6 +12,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "../J_renderer/includes/Renderer.h"
+#include <filesystem>
+#include <assimp/version.h>
 
 using namespace std;
 
@@ -256,6 +258,7 @@ int main(){
         cerr << "Error: " << err.what() << endl;
         exit(1);
     } 
+
     glm::mat4 view;
     
     const float radius = 10.0f;
@@ -309,7 +312,8 @@ int main(){
         shdr.setMat4("view", cam.view);
         shdr.setMat4("projection", cam.projection);
 
-        vao.Bind(); 
+        vao.Bind();
+
         for (auto cube : cubes) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cube.get_position());

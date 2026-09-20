@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <glad.h>
@@ -16,20 +17,21 @@ struct Vertex {
     glm::vec3 Normal;
     glm::vec2 TexCoords;
 };
-
-struct Texture {
-    unsigned int id;
-    string type;
-    string path;
-}; 
+namespace MeshSys {
+    struct Texture {
+        unsigned int id;
+        string type;
+        string path;
+    }; 
+}
 
 class Mesh {
 public:
     vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<Texture> textures;
+    vector<MeshSys::Texture> textures;
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<MeshSys::Texture> textures)
     : vertices(vertices), indices(indices), textures(textures) { setupMesh(); }
     
     void Draw(Shader &shdr) {
