@@ -45,9 +45,11 @@ void main() {
     
     vec3 result = (ambient + diffuse + specular);
 
-    if (useTex) {
-        color = texture(ourTex, TexCoord) * vec4(result, 1.0); // Mixes the texture color with our color    
-    } else {
-        color = vec4(1.0f, 0.0f, 0.0f, 1.0) * vec4(result, 1.0);
-    }
+    color = texture(ourTex, TexCoord) * vec4(1.0);
+
+    // if (useTex) {
+    //    color = texture(ourTex, TexCoord) * vec4(result, 1.0); // Mixes the texture color with our color    
+    // } else {
+    //    color = vec4(1.0f, 0.0f, 0.0f, 1.0) * vec4(result, 1.0);
+    // }
 }

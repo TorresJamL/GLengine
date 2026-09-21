@@ -11,3 +11,4 @@
 #include "../includes/Texture.hpp" // There's definitely a better solution to this but ehh
 #include "Shapes.hpp"
 #include "utils.hpp"
+#include "Model.hpp"

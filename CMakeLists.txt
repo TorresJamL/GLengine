@@ -25,7 +25,7 @@ add_executable(GLENGINE
     J_engine/J_renderer/src/stb_image.cpp
 )
 
-target_link_libraries(GLENGINE PRIVATE glfw glm::glm OpenGL::GL)
+target_link_libraries(GLENGINE PRIVATE glfw glm::glm OpenGL::GL assimp::assimp)
 
 target_include_directories(GLENGINE 
     PRIVATE 

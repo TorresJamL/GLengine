@@ -151,7 +151,7 @@ int main(){
 
     cout << "Cubes Made." << endl;
 
-    Cube lightCube(glm::vec3(0.0f, 2.0f, 6.0f), glm::vec3(1.0f));
+    Cube lightCube(glm::vec3(0.0f, 100.0f, 6.0f), glm::vec3(1.0f));
     cout << "Light Cube Made." << endl;
 
     //* Light Cube VAO
@@ -217,7 +217,7 @@ int main(){
         shdr.setBool("useTex", true);
         shdr.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
         shdr.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); 
-        shdr.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        shdr.setVec3("light.specular", 20.0f, 20.0f, 20.0f); 
         shdr.setVec3("material.ambient", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
         shdr.setVec3("material.diffuse", 1.0f, 1.0f, 1.0f); // Changing this might cause texture coloring issues
         shdr.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
@@ -258,6 +258,8 @@ int main(){
     } 
     glm::mat4 view;
     
+    Model m("../J_renderer/resources/assets/Senator Armstrong/Senator Armstrong.obj");
+
     const float radius = 10.0f;
     
 	double currentFrame = 0.0;
@@ -295,7 +297,7 @@ int main(){
         shdr.Use();
 
         cam.ProcessMouse(window, deltaTime);
-        cam.Matrix(fov, aspect, 0.1f, 100.0f, shdr);
+        cam.Matrix(fov, aspect, 0.1f, 1000.0f, shdr);
 
         // if (cubes[0].get_position().z >= 5.0f && velocity > 0) {
         //     velocity *= -1;
@@ -310,12 +312,17 @@ int main(){
         shdr.setMat4("projection", cam.projection);
 
         vao.Bind(); 
-        for (auto cube : cubes) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cube.get_position());
-            shdr.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        // for (auto cube : cubes) {
+        //     glm::mat4 model = glm::mat4(1.0f);
+        //     model = glm::translate(model, cube.get_position());
+        //     shdr.setMat4("model", model);
+        //     glDrawArrays(GL_TRIANGLES, 0, 36);
+        // }
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        shdr.setMat4("model", model);
+        m.Draw(shdr);
         
         lightShdr.Use();
         lightShdr.setMat4("view", cam.view);
@@ -323,8 +330,8 @@ int main(){
 
         lightVao.Bind();
 
-        float lightX = 10.0f * glm::sin(glfwGetTime() + ((velocity - 1) * deltaTime)); 
-        float lightZ = 10.0f * glm::cos(glfwGetTime() + ((velocity - 1) * deltaTime));
+        float lightX = 75.0f * glm::sin(glfwGetTime() + ((velocity - 1) * deltaTime)); 
+        float lightZ = 75.0f * glm::cos(glfwGetTime() + ((velocity - 1) * deltaTime));
         lightCube.set_x(lightX);
         lightCube.set_z(lightZ);
 

@@ -1,0 +1,218 @@
+# MTL file - created by a modified js OBJExporter
+
+newmtl bayomat_004_skn21_xbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_004_skn21_xbXxX.png
+
+newmtl bayomat_005_ois02_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_004_skn21_xbXxX.png
+
+newmtl bayomat_006_ois00_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_006_ois00_xbxeX.png
+
+newmtl bayomat_007_ois00_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_006_ois00_xbxeX.png
+
+newmtl bayomat_008_ois00_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_008_ois00_xbxeX.png
+
+newmtl bayomat_001_ois00_xbceX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_001_ois00_xbceX.png
+
+newmtl bayomat_002_ois00_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_001_ois00_xbceX.png
+
+newmtl bayomat_003_ois00_xbceX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_003_ois00_xbceX.png
+
+newmtl bayomat_000_skn21_xbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_000_skn21_xbXxX.png
+
+newmtl bayomat_001_ois00_xbweX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+
+newmtl bayomat_002_har00_xbXtX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_002_har00_xbXtX.png
+
+newmtl bayomat_003_eye00_xbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+
+newmtl bayomat_004_eye01_xbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_004_eye01_xbXxX.png
+
+newmtl bayomat_006_ois02_sbxxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_006_ois02_sbxxX.png
+
+newmtl bayomat_007_har00_sbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_007_har00_sbXxX.png
+
+newmtl bayomat_008_har00_sbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_007_har00_sbXxX.png
+
+newmtl bayomat_009_har00_sbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_007_har00_sbXxX.png
+
+newmtl bayomat_011_ois02_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+
+newmtl bayomat_014_har00_sbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_007_har00_sbXxX.png
+
+newmtl bayomat_015_har00_sbXxX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_007_har00_sbXxX.png
+
+newmtl bayomat_017_gla00_sbXxv
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_017_gla00_sbXxv.png
+
+newmtl bayomat_018_ois00_xbxeX
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 0.5
+Ka 1 1 1
+Kd 0.800000011920929 0.800000011920929 0.800000011920929
+Ke 0 0 0
+map_Kd bayomat_017_gla00_sbXxv.png
