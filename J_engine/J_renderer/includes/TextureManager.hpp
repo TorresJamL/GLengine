@@ -4,15 +4,17 @@
 #include <unordered_map>
 #include "Texture.hpp"
 
+typedef unsigned short tex_unit;
+
 class TextureManager {
 public:
     const static struct TEX {
-        const unsigned short MAX_UNITS = GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
-        unsigned short available = GL_TEXTURE0;
+        const tex_unit MAX_UNITS = GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
+        tex_unit available = GL_TEXTURE0;
     };
 
     TextureManager::TEX tex;
-    unordered_map<unsigned short, Texture> textureLookUpMap;
+    unordered_map<tex_unit, Texture> textureLookUpMap;
 
     void assign(Texture &t) {
         if (tex.available >= tex.MAX_UNITS) {
@@ -21,7 +23,7 @@ public:
         textureLookUpMap[tex.available++] = t;
     }
     
-    void remove(unsigned short texUnit) {
+    void remove(tex_unit texUnit) {
         textureLookUpMap.erase(texUnit);
     } 
 
@@ -34,9 +36,9 @@ public:
         return false;
     }
 
-    bool lookUp(unsigned short unit) { return textureLookUpMap.contains(unit); }
+    bool lookUp(tex_unit unit) { return textureLookUpMap.contains(unit); }
 
-    Texture& operator[] (const unsigned short key) {
+    Texture& operator[] (const tex_unit key) {
         return textureLookUpMap[key];
     }
 private:
