@@ -16,7 +16,7 @@
 using namespace std;
 
 // GLOBALS
-float width = 800.0f;
+float width = 8000.0f;
 float height = 600.0f;
 float aspect = width / height;
 bool firstMouse = true;
